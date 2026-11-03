@@ -5,8 +5,8 @@
 
 int main()
 {
-    Arvore *A = CriaArvore();
-    int Opcao;
+    Arv *Arvore = Criar_Arvore();
+    int Opcao, valor;
 
     do{
         system("cls");
