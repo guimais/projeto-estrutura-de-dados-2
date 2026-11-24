@@ -24,7 +24,7 @@ typedef struct NoTabela
     struct NoTabela *prox;
 }NoTabela;
 
-typedef struct EstruturaTabela
+typedef struct BaseTabela
 {
     NoTabela *vetor[TAMANHO_TABELA];
 }Tabela;
@@ -33,35 +33,50 @@ typedef struct EstruturaTabela
 Tabela* Criar_Tabela()
 {
     Tabela *aux;
+    int i;
     aux = (Tabela*)malloc(sizeof(Tabela));
-    for(int i = 0; i < TAMANHO_TABELA; i++)
+    for(i = 0; i < TAMANHO_TABELA; i++)
     {
         aux->vetor[i] = NULL;
     }
     return aux;
 }
 
-int FuncaoHash(int codigo)
+int FuncaoHash(int num)
 {
-    return codigo % TAMANHO_TABELA;
+    return num % TAMANHO_TABELA;
 }
 
-NoTabela* BuscaNaTabela(Tabela *TabelaHash, int codigo)
+NoTabela* BuscaTabela(Tabela *TabelaHash, int num)
 {
     int flag, posicao;
     NoTabela *aux;
-    posicao = FuncaoHash(codigo);
-    aux = TabelaHash -> vetor[posicao];
-    flag = 0;
-    while (aux != NULL && flag == 0)
+    posicao = FuncaoHash(num);
+    if(TabelaHash -> vetor[posicao] == NULL)
     {
-        if(aux -> info.CodigoEquipamento == codigo)
+        return NULL;
+    }
+    else
+    {
+        aux = TabelaHash -> vetor[posicao];
+        flag = 0;
+        while (flag == 0)
         {
-            flag = 1;
-        }
-        else
-        {
-            aux = aux -> prox;
+            if(aux -> info.CodigoEquipamento == num)
+            {
+                flag = 1;
+            }
+            else
+            {
+                if(aux -> prox == NULL)
+                {
+                    flag = 2;
+                }
+                else
+                {
+                    aux = aux -> prox;
+                }
+            }
         }
     }
     if(flag == 1)
@@ -71,24 +86,108 @@ NoTabela* BuscaNaTabela(Tabela *TabelaHash, int codigo)
     return NULL;
 }
 
-void InsereNaTabela(Tabela *TabelaHash, Equipamento equipamento)
+void insere_tabela(Tabela *TabelaHash, Equipamento num)
 {
     int posicao;
     NoTabela *novo = (NoTabela*)malloc(sizeof(NoTabela));
-    novo -> info = equipamento;
+    novo -> info = num;
     novo -> incidentes = NULL;
     novo -> prox = NULL;
 
-    if(BuscaNaTabela(TabelaHash, equipamento.CodigoEquipamento) != NULL)
+    if(BuscaTabela(TabelaHash, num.CodigoEquipamento) != NULL)
     {
         free(novo);
     }
     else
     {
-        posicao = FuncaoHash(equipamento.CodigoEquipamento);
+        posicao = FuncaoHash(num.CodigoEquipamento);
         novo -> prox = TabelaHash -> vetor[posicao];
         TabelaHash -> vetor[posicao] = novo;
     }
+}
+
+void insere_lista(NoTabela *equipamento, int num)
+{
+    NoLista *novo = (NoLista*)malloc(sizeof(NoLista));
+    novo -> IdIncidente = num;
+    novo -> prox = equipamento -> incidentes;
+    equipamento -> incidentes = novo;
+}
+
+void remover_lista(NoTabela *equipamento, int num)
+{
+    int flag;
+    NoLista *aux;
+    NoLista *anterior;
+    if(equipamento -> incidentes != NULL)
+    {
+        aux = equipamento -> incidentes;
+        anterior = NULL;
+        flag = 0;
+        while (flag == 0)
+        {
+            if(aux -> IdIncidente == num)
+            {
+                flag = 1;
+            }
+            else
+            {
+                if(aux -> prox == NULL)
+                {
+                    flag = 2;
+                }
+                else
+                {
+                    anterior = aux;
+                    aux = aux -> prox;
+                }
+            }
+        }
+        if(flag == 1)
+        {
+            if(anterior == NULL)
+            {
+                equipamento -> incidentes = aux -> prox;
+            }
+            else
+            {
+                anterior -> prox = aux -> prox;
+            }
+            free(aux);
+        }
+    }
+}
+
+void libera_lista(NoLista *inicio)
+{
+    NoLista *aux;
+    NoLista *temp;
+    aux = inicio;
+    while(aux != NULL)
+    {
+        temp = aux;
+        aux = aux -> prox;
+        free(temp);
+    }
+}
+
+void libera_tabela(Tabela *TabelaHash)
+{
+    int i;
+    NoTabela *aux;
+    NoTabela *temp;
+    for(i = 0; i < TAMANHO_TABELA; i++)
+    {
+        aux = TabelaHash -> vetor[i];
+        while(aux != NULL)
+        {
+            temp = aux;
+            aux = aux -> prox;
+            libera_lista(temp -> incidentes);
+            free(temp);
+        }
+    }
+    free(TabelaHash);
 }
 
 #endif

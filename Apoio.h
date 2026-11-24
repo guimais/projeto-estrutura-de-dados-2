@@ -186,16 +186,16 @@ NoArv* remover_aux(NoArv *pai, int num)
             {
                 pai -> esq = remover_aux(pai -> esq,num);
             }
-            else
+            else /*achou o nó a ser removido*/
             {
-                if(pai -> dir == NULL && pai -> esq == NULL)
+                if(pai -> dir == NULL && pai -> esq == NULL) /* No sem filhos */
                 {
                     free(pai);
                     pai = NULL;
                 }
                 else
                 {
-                    if (pai->esq==NULL)
+                    if (pai->esq==NULL) /*so tem filho da direita */
                     {
                         NoArv *aux=pai;
                         pai = pai->dir;
@@ -203,13 +203,13 @@ NoArv* remover_aux(NoArv *pai, int num)
                     }
                     else
                     {
-                        if((pai->dir==NULL))
+                        if((pai->dir==NULL))/* so tem filho da esquerda */
                         {
                             NoArv *aux=pai;
                             pai = pai->esq;
                             free(aux);
                         }
-                        else
+                        else /* tem os dois filhos */
                         {
                             NoArv *aux;
                             Incidente temp;
@@ -219,7 +219,7 @@ NoArv* remover_aux(NoArv *pai, int num)
                                 aux = aux -> dir;
                             }
                             temp = pai -> info;
-                            pai -> info = aux -> info;
+                            pai -> info = aux -> info; /* troca as informações */
                             aux -> info = temp;
                             pai -> esq = remover_aux(pai -> esq,num);
                         }

@@ -8,10 +8,13 @@ int main()
 {
     Arv *Arvore = Criar_Arvore();
     Tabela *TabelaHash = Criar_Tabela();
+    int codigo;
     int Opcao, valor;
+    char nome[100];
     Incidente novoIncidente;
     Equipamento novoEquipamento;
-    char nome[100];
+    NoTabela *equip;
+    NoArv *incidente;
 
     do{
         system("cls");
@@ -40,7 +43,7 @@ int main()
                 if (valor < 1000 || valor > 9999){
                     printf("Codigo invalido. Use 4 digitos (1000 a 9999).\n");
                 } else {
-                    if (BuscaNaTabela(TabelaHash, valor) != NULL){
+                    if (BuscaTabela(TabelaHash, valor) != NULL){
                         printf("Equipamento %d ja cadastrado.\n", valor);
                     } else {
                         printf("Digite o nome do equipamento (ate 10 caracteres): ");
@@ -51,7 +54,7 @@ int main()
                         } else {
                             novoEquipamento.CodigoEquipamento = valor;
                             strcpy(novoEquipamento.Nome, nome);
-                            InsereNaTabela(TabelaHash, novoEquipamento);
+                            insere_tabela(TabelaHash, novoEquipamento);
                             printf("Equipamento %d cadastrado.\n", valor);
                         }
                     }
@@ -78,11 +81,19 @@ int main()
 
                         if (novoIncidente.CodigoEquipamento < 1000 || novoIncidente.CodigoEquipamento > 9999){
                             printf("Codigo invalido. Use 4 digitos (1000 a 9999).\n");
-                        } else if (novoIncidente.gravidade < 1 || novoIncidente.gravidade > 3){
-                            printf("Gravidade invalida.\n");
                         } else {
-                            insere(Arvore, novoIncidente);
-                            printf("Incidente %d registrado.\n", valor);
+                            equip = BuscaTabela(TabelaHash, novoIncidente.CodigoEquipamento);
+                            if (equip == NULL){
+                                printf("Equipamento %d nao cadastrado.\n", novoIncidente.CodigoEquipamento);
+                            } else {
+                                if (novoIncidente.gravidade < 1 || novoIncidente.gravidade > 3){
+                                    printf("Gravidade invalida.\n");
+                                } else {
+                                    insere(Arvore, novoIncidente);
+                                    insere_lista(equip, valor);
+                                    printf("Incidente %d registrado.\n", valor);
+                                }
+                            }
                         }
                     }
                 }
@@ -104,12 +115,18 @@ int main()
                     valor = 0;
                     scanf("%d", &valor);
 
-                    if (BuscaArv(Arvore, valor) == NULL){
+                    incidente = BuscaArv(Arvore, valor);
+                    if (incidente == NULL){
                         printf("ID %d nao encontrado.\n", valor);
                     } else {
+                        codigo = incidente -> info.CodigoEquipamento;
                         Arvore = remover(Arvore, valor);
                         if (Arvore == NULL){
                             Arvore = Criar_Arvore();
+                        }
+                        equip = BuscaTabela(TabelaHash, codigo);
+                        if (equip != NULL){
+                            remover_lista(equip, valor);
                         }
                         printf("Incidente %d removido.\n", valor);
                     }
@@ -119,7 +136,7 @@ int main()
                 break;
             case 7:
                 libera(Arvore);
-                free(TabelaHash);
+                libera_tabela(TabelaHash);
                 printf("Programa encerrado.\n");
                 break;
             default:
