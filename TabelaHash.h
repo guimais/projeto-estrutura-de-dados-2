@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define TAMANHO_TABELA 71
+#define TAMANHO_TABELA 71 /* M: primo, longe de potencias de 2 e de 10 (aula 14) */
 
 typedef struct {
     int CodigoEquipamento;
@@ -42,7 +42,7 @@ Tabela* Criar_Tabela()
     return aux;
 }
 
-int FuncaoHash(int num)
+int FuncaoHash(int num) /* h(k) = k % M - Metodo da Divisao (aula 14) */
 {
     return num % TAMANHO_TABELA;
 }
@@ -168,6 +168,52 @@ void libera_lista(NoLista *inicio)
         temp = aux;
         aux = aux -> prox;
         free(temp);
+    }
+}
+
+void remover_tabela(Tabela *TabelaHash, int num)
+{
+    int flag, posicao;
+    NoTabela *aux;
+    NoTabela *anterior;
+    posicao = FuncaoHash(num);
+    if(TabelaHash -> vetor[posicao] != NULL)
+    {
+        aux = TabelaHash -> vetor[posicao];
+        anterior = NULL;
+        flag = 0;
+        while (flag == 0)
+        {
+            if(aux -> info.CodigoEquipamento == num)
+            {
+                flag = 1;
+            }
+            else
+            {
+                if(aux -> prox == NULL)
+                {
+                    flag = 2;
+                }
+                else
+                {
+                    anterior = aux;
+                    aux = aux -> prox;
+                }
+            }
+        }
+        if(flag == 1)
+        {
+            if(anterior == NULL)
+            {
+                TabelaHash -> vetor[posicao] = aux -> prox;
+            }
+            else
+            {
+                anterior -> prox = aux -> prox;
+            }
+            libera_lista(aux -> incidentes);
+            free(aux);
+        }
     }
 }
 

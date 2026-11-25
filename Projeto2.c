@@ -8,13 +8,14 @@ int main()
 {
     Arv *Arvore = Criar_Arvore();
     Tabela *TabelaHash = Criar_Tabela();
-    int codigo;
     int Opcao, valor;
-    char nome[100];
     Incidente novoIncidente;
     Equipamento novoEquipamento;
+    char nome[100];
     NoTabela *equip;
+    NoLista *lista;
     NoArv *incidente;
+    int codigo;
 
     do{
         system("cls");
@@ -99,6 +100,33 @@ int main()
                 }
                 break;
             case 3:
+                printf("Digite o codigo do equipamento: ");
+                valor = 0;
+                scanf("%d", &valor);
+
+                if (valor < 1000 || valor > 9999){
+                    printf("Codigo invalido. Use 4 digitos (1000 a 9999).\n");
+                } else {
+                    equip = BuscaTabela(TabelaHash, valor);
+                    if (equip == NULL){
+                        printf("Equipamento %d nao encontrado.\n", valor);
+                    } else {
+                        printf("Codigo: %d - Nome: %s\n", equip -> info.CodigoEquipamento, equip -> info.Nome);
+                        if (equip -> incidentes == NULL){
+                            printf("Nenhum incidente associado.\n");
+                        } else {
+                            printf("Incidentes:\n");
+                            lista = equip -> incidentes;
+                            while (lista != NULL){
+                                incidente = BuscaArv(Arvore, lista -> IdIncidente);
+                                if (incidente != NULL){
+                                    printf("ID: %d - Gravidade: %d\n", incidente -> info.IdIncidente, incidente -> info.gravidade);
+                                }
+                                lista = lista -> prox;
+                            }
+                        }
+                    }
+                }
                 break;
             case 4:
                 if (ArvVazia(Arvore) == 1){
@@ -133,6 +161,29 @@ int main()
                 }
                 break;
             case 6:
+                printf("Digite o codigo do equipamento: ");
+                valor = 0;
+                scanf("%d", &valor);
+
+                if (valor < 1000 || valor > 9999){
+                    printf("Codigo invalido. Use 4 digitos (1000 a 9999).\n");
+                } else {
+                    equip = BuscaTabela(TabelaHash, valor);
+                    if (equip == NULL){
+                        printf("Equipamento %d nao encontrado.\n", valor);
+                    } else {
+                        lista = equip -> incidentes;
+                        while (lista != NULL){
+                            Arvore = remover(Arvore, lista -> IdIncidente);
+                            if (Arvore == NULL){
+                                Arvore = Criar_Arvore();
+                            }
+                            lista = lista -> prox;
+                        }
+                        remover_tabela(TabelaHash, valor);
+                        printf("Equipamento %d e seus incidentes removidos.\n", valor);
+                    }
+                }
                 break;
             case 7:
                 libera(Arvore);
