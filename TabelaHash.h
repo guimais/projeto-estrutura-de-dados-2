@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define TAMANHO_TABELA 71 /* M: primo, longe de potencias de 2 e de 10 (aula 14) */
+#define TAMANHO_TABELA 71
 
 typedef struct {
     int CodigoEquipamento;
@@ -42,7 +42,7 @@ Tabela* Criar_Tabela()
     return aux;
 }
 
-int FuncaoHash(int num) /* h(k) = k % M - Metodo da Divisao (aula 14) */
+int FuncaoHash(int num)
 {
     return num % TAMANHO_TABELA;
 }
