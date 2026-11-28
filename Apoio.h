@@ -2,8 +2,6 @@
 #define APOIO_H_INCLUDED
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 
 typedef struct {
     int IdIncidente;
@@ -27,13 +25,13 @@ Arv* Criar_Arvore()
 {
     Arv *aux;
     aux=(Arv*)malloc(sizeof(Arv));
-    aux->raiz = NULL;
+    aux -> raiz = NULL;
     return aux;
 }
 
 int ArvVazia(Arv *base)
 {
-    if(base->raiz==NULL)
+    if(base -> raiz==NULL)
     {
         return 1;
     }
@@ -160,7 +158,7 @@ void InOrder(NoArv *Pai)
         InOrder(Pai -> esq);
     }
 
-    printf("ID: %d - Equipamento: %d - Gravidade: %d\n", Pai->info.IdIncidente, Pai->info.CodigoEquipamento, Pai->info.gravidade);
+    printf("ID: %d - Equipamento: %d - Gravidade: %d\n", Pai -> info.IdIncidente, Pai -> info.CodigoEquipamento, Pai -> info.gravidade);
 
     if(Pai -> dir != NULL)
     {
@@ -176,40 +174,40 @@ NoArv* remover_aux(NoArv *pai, int num)
     }
     else
     {
-        if(num > pai->info.IdIncidente)
+        if(num > pai -> info.IdIncidente)
         {
             pai -> dir = remover_aux(pai -> dir,num);
         }
         else
         {
-            if(num < pai->info.IdIncidente)
+            if(num < pai -> info.IdIncidente)
             {
                 pai -> esq = remover_aux(pai -> esq,num);
             }
-            else /*achou o nó a ser removido*/
+            else
             {
-                if(pai -> dir == NULL && pai -> esq == NULL) /* No sem filhos */
+                if(pai -> dir == NULL && pai -> esq == NULL)
                 {
                     free(pai);
                     pai = NULL;
                 }
                 else
                 {
-                    if (pai->esq==NULL) /*so tem filho da direita */
+                    if (pai -> esq==NULL)
                     {
                         NoArv *aux=pai;
-                        pai = pai->dir;
+                        pai = pai -> dir;
                         free(aux);
                     }
                     else
                     {
-                        if((pai->dir==NULL))/* so tem filho da esquerda */
+                        if((pai -> dir==NULL))
                         {
                             NoArv *aux=pai;
-                            pai = pai->esq;
+                            pai = pai -> esq;
                             free(aux);
                         }
-                        else /* tem os dois filhos */
+                        else
                         {
                             NoArv *aux;
                             Incidente temp;
@@ -219,7 +217,7 @@ NoArv* remover_aux(NoArv *pai, int num)
                                 aux = aux -> dir;
                             }
                             temp = pai -> info;
-                            pai -> info = aux -> info; /* troca as informações */
+                            pai -> info = aux -> info;
                             aux -> info = temp;
                             pai -> esq = remover_aux(pai -> esq,num);
                         }
@@ -240,7 +238,7 @@ Arv* remover( Arv *RAIZ, int num)
         free(RAIZ);
         return NULL;
     }
-    RAIZ -> raiz = remover_aux(RAIZ->raiz,num);
+    RAIZ -> raiz = remover_aux(RAIZ -> raiz,num);
     return RAIZ;
 }
 

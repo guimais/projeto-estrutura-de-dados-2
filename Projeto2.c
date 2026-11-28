@@ -7,17 +7,25 @@
 int main()
 {
     Arv *Arvore = Criar_Arvore();
-    Tabela *TabelaHash = Criar_Tabela();
-    int Opcao, valor;
+    NoTabela *TabelaHash[TAMANHO_TABELA];
+
+    int Opcao, valor, codigo, i;
+    char nome[100], entrada[100];
+
     Incidente novoIncidente;
     Equipamento novoEquipamento;
-    char nome[100];
+
+    NoArv *incidente;
     NoTabela *equip;
     NoLista *lista;
-    NoArv *incidente;
-    int codigo;
 
-    do{
+    for(i = 0; i < TAMANHO_TABELA; i++)
+    {
+        TabelaHash[i] = NULL;
+    }
+
+    do
+    {
         system("cls");
         printf("\n**************************************************************");
         printf("\n Sistema de Gerenciamento de Falhas em Equipamentos");
@@ -35,24 +43,34 @@ int main()
         Opcao = 0;
         scanf("%d", &Opcao);
 
-        switch(Opcao){
+        switch(Opcao)
+        {
             case 1:
                 printf("Digite o codigo do equipamento: ");
                 valor = 0;
                 scanf("%d", &valor);
 
-                if (valor < 1000 || valor > 9999){
+                if(valor < 1000 || valor > 9999)
+                {
                     printf("Codigo invalido. Use 4 digitos (1000 a 9999).\n");
-                } else {
-                    if (BuscaTabela(TabelaHash, valor) != NULL){
+                }
+                else
+                {
+                    if(BuscaTabela(TabelaHash, valor) != NULL)
+                    {
                         printf("Equipamento %d ja cadastrado.\n", valor);
-                    } else {
+                    }
+                    else
+                    {
                         printf("Digite o nome do equipamento (ate 10 caracteres): ");
                         scanf("%99s", nome);
 
-                        if (strlen(nome) > 10){
+                        if(strlen(nome) > 10)
+                        {
                             printf("Nome invalido. Use no maximo 10 caracteres.\n");
-                        } else {
+                        }
+                        else
+                        {
                             novoEquipamento.CodigoEquipamento = valor;
                             strcpy(novoEquipamento.Nome, nome);
                             insere_tabela(TabelaHash, novoEquipamento);
@@ -66,30 +84,47 @@ int main()
                 valor = 0;
                 scanf("%d", &valor);
 
-                if (valor < 10 || valor > 99){
+                if(valor < 10 || valor > 99)
+                {
                     printf("ID invalido. Use 2 digitos.\n");
-                } else {
-                    if (BuscaArv(Arvore, valor) != NULL){
+                }
+                else
+                {
+                    if(BuscaArv(Arvore, valor) != NULL)
+                    {
                         printf("ID %d ja cadastrado.\n", valor);
-                    } else {
+                    }
+                    else
+                    {
                         novoIncidente.IdIncidente = valor;
 
                         printf("Digite o codigo do equipamento: ");
+                        novoIncidente.CodigoEquipamento = 0;
                         scanf("%d", &novoIncidente.CodigoEquipamento);
 
-                        printf("Digite a gravidade (1-Baixa, 2-Media, 3-Alta): ");
-                        scanf("%d", &novoIncidente.gravidade);
-
-                        if (novoIncidente.CodigoEquipamento < 1000 || novoIncidente.CodigoEquipamento > 9999){
+                        if(novoIncidente.CodigoEquipamento < 1000 || novoIncidente.CodigoEquipamento > 9999)
+                        {
                             printf("Codigo invalido. Use 4 digitos (1000 a 9999).\n");
-                        } else {
+                        }
+                        else
+                        {
                             equip = BuscaTabela(TabelaHash, novoIncidente.CodigoEquipamento);
-                            if (equip == NULL){
+                            if(equip == NULL)
+                            {
                                 printf("Equipamento %d nao cadastrado.\n", novoIncidente.CodigoEquipamento);
-                            } else {
-                                if (novoIncidente.gravidade < 1 || novoIncidente.gravidade > 3){
+                            }
+                            else
+                            {
+                                printf("Digite a gravidade (1-Baixa, 2-Media, 3-Alta): ");
+                                novoIncidente.gravidade = 0;
+                                scanf("%d", &novoIncidente.gravidade);
+
+                                if(novoIncidente.gravidade < 1 || novoIncidente.gravidade > 3)
+                                {
                                     printf("Gravidade invalida.\n");
-                                } else {
+                                }
+                                else
+                                {
                                     insere(Arvore, novoIncidente);
                                     insere_lista(equip, valor);
                                     printf("Incidente %d registrado.\n", valor);
@@ -104,22 +139,33 @@ int main()
                 valor = 0;
                 scanf("%d", &valor);
 
-                if (valor < 1000 || valor > 9999){
+                if(valor < 1000 || valor > 9999)
+                {
                     printf("Codigo invalido. Use 4 digitos (1000 a 9999).\n");
-                } else {
+                }
+                else
+                {
                     equip = BuscaTabela(TabelaHash, valor);
-                    if (equip == NULL){
+                    if(equip == NULL)
+                    {
                         printf("Equipamento %d nao encontrado.\n", valor);
-                    } else {
+                    }
+                    else
+                    {
                         printf("Codigo: %d - Nome: %s\n", equip -> info.CodigoEquipamento, equip -> info.Nome);
-                        if (equip -> incidentes == NULL){
+                        if(equip -> incidentes == NULL)
+                        {
                             printf("Nenhum incidente associado.\n");
-                        } else {
+                        }
+                        else
+                        {
                             printf("Incidentes:\n");
                             lista = equip -> incidentes;
-                            while (lista != NULL){
+                            while(lista != NULL)
+                            {
                                 incidente = BuscaArv(Arvore, lista -> IdIncidente);
-                                if (incidente != NULL){
+                                if(incidente != NULL)
+                                {
                                     printf("ID: %d - Gravidade: %d\n", incidente -> info.IdIncidente, incidente -> info.gravidade);
                                 }
                                 lista = lista -> prox;
@@ -129,31 +175,42 @@ int main()
                 }
                 break;
             case 4:
-                if (ArvVazia(Arvore) == 1){
+                if(ArvVazia(Arvore) == 1)
+                {
                     printf("Nenhum incidente cadastrado.\n");
-                } else {
+                }
+                else
+                {
                     InOrder(Arvore -> raiz);
                 }
                 break;
             case 5:
-                if (ArvVazia(Arvore) == 1){
+                if(ArvVazia(Arvore) == 1)
+                {
                     printf("Nenhum incidente cadastrado.\n");
-                } else {
+                }
+                else
+                {
                     printf("Digite o ID do incidente: ");
                     valor = 0;
                     scanf("%d", &valor);
 
                     incidente = BuscaArv(Arvore, valor);
-                    if (incidente == NULL){
+                    if(incidente == NULL)
+                    {
                         printf("ID %d nao encontrado.\n", valor);
-                    } else {
+                    }
+                    else
+                    {
                         codigo = incidente -> info.CodigoEquipamento;
                         Arvore = remover(Arvore, valor);
-                        if (Arvore == NULL){
+                        if(Arvore == NULL)
+                        {
                             Arvore = Criar_Arvore();
                         }
                         equip = BuscaTabela(TabelaHash, codigo);
-                        if (equip != NULL){
+                        if(equip != NULL)
+                        {
                             remover_lista(equip, valor);
                         }
                         printf("Incidente %d removido.\n", valor);
@@ -165,17 +222,25 @@ int main()
                 valor = 0;
                 scanf("%d", &valor);
 
-                if (valor < 1000 || valor > 9999){
+                if(valor < 1000 || valor > 9999)
+                {
                     printf("Codigo invalido. Use 4 digitos (1000 a 9999).\n");
-                } else {
+                }
+                else
+                {
                     equip = BuscaTabela(TabelaHash, valor);
-                    if (equip == NULL){
+                    if(equip == NULL)
+                    {
                         printf("Equipamento %d nao encontrado.\n", valor);
-                    } else {
+                    }
+                    else
+                    {
                         lista = equip -> incidentes;
-                        while (lista != NULL){
+                        while(lista != NULL)
+                        {
                             Arvore = remover(Arvore, lista -> IdIncidente);
-                            if (Arvore == NULL){
+                            if(Arvore == NULL)
+                            {
                                 Arvore = Criar_Arvore();
                             }
                             lista = lista -> prox;
@@ -194,14 +259,14 @@ int main()
                 printf("Seu numero e invalido. Digite novamente\n");
                 break;
         }
-         if (Opcao != 7) {
-            while (getchar() != '\n');
+        if(Opcao != 7)
+        {
+            fgets(entrada, 100, stdin);
             printf("\nPressione ENTER para continuar...");
             getchar();
         }
     }
-    while (Opcao != 7);
-
+    while(Opcao != 7);
 
     return 0;
 }

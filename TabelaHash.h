@@ -1,8 +1,6 @@
 #ifndef TABELAHASH_H_INCLUDED
 #define TABELAHASH_H_INCLUDED
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #define TAMANHO_TABELA 71
 
@@ -24,41 +22,23 @@ typedef struct NoTabela
     struct NoTabela *prox;
 }NoTabela;
 
-typedef struct BaseTabela
-{
-    NoTabela *vetor[TAMANHO_TABELA];
-}Tabela;
-
-
-Tabela* Criar_Tabela()
-{
-    Tabela *aux;
-    int i;
-    aux = (Tabela*)malloc(sizeof(Tabela));
-    for(i = 0; i < TAMANHO_TABELA; i++)
-    {
-        aux->vetor[i] = NULL;
-    }
-    return aux;
-}
-
 int FuncaoHash(int num)
 {
     return num % TAMANHO_TABELA;
 }
 
-NoTabela* BuscaTabela(Tabela *TabelaHash, int num)
+NoTabela* BuscaTabela(NoTabela *TabelaHash[], int num)
 {
     int flag, posicao;
     NoTabela *aux;
     posicao = FuncaoHash(num);
-    if(TabelaHash -> vetor[posicao] == NULL)
+    if(TabelaHash[posicao] == NULL)
     {
         return NULL;
     }
     else
     {
-        aux = TabelaHash -> vetor[posicao];
+        aux = TabelaHash[posicao];
         flag = 0;
         while (flag == 0)
         {
@@ -86,7 +66,7 @@ NoTabela* BuscaTabela(Tabela *TabelaHash, int num)
     return NULL;
 }
 
-void insere_tabela(Tabela *TabelaHash, Equipamento num)
+void insere_tabela(NoTabela *TabelaHash[], Equipamento num)
 {
     int posicao;
     NoTabela *novo = (NoTabela*)malloc(sizeof(NoTabela));
@@ -101,8 +81,8 @@ void insere_tabela(Tabela *TabelaHash, Equipamento num)
     else
     {
         posicao = FuncaoHash(num.CodigoEquipamento);
-        novo -> prox = TabelaHash -> vetor[posicao];
-        TabelaHash -> vetor[posicao] = novo;
+        novo -> prox = TabelaHash[posicao];
+        TabelaHash[posicao] = novo;
     }
 }
 
@@ -171,15 +151,15 @@ void libera_lista(NoLista *inicio)
     }
 }
 
-void remover_tabela(Tabela *TabelaHash, int num)
+void remover_tabela(NoTabela *TabelaHash[], int num)
 {
     int flag, posicao;
     NoTabela *aux;
     NoTabela *anterior;
     posicao = FuncaoHash(num);
-    if(TabelaHash -> vetor[posicao] != NULL)
+    if(TabelaHash[posicao] != NULL)
     {
-        aux = TabelaHash -> vetor[posicao];
+        aux = TabelaHash[posicao];
         anterior = NULL;
         flag = 0;
         while (flag == 0)
@@ -205,7 +185,7 @@ void remover_tabela(Tabela *TabelaHash, int num)
         {
             if(anterior == NULL)
             {
-                TabelaHash -> vetor[posicao] = aux -> prox;
+                TabelaHash[posicao] = aux -> prox;
             }
             else
             {
@@ -217,14 +197,14 @@ void remover_tabela(Tabela *TabelaHash, int num)
     }
 }
 
-void libera_tabela(Tabela *TabelaHash)
+void libera_tabela(NoTabela *TabelaHash[])
 {
     int i;
     NoTabela *aux;
     NoTabela *temp;
     for(i = 0; i < TAMANHO_TABELA; i++)
     {
-        aux = TabelaHash -> vetor[i];
+        aux = TabelaHash[i];
         while(aux != NULL)
         {
             temp = aux;
@@ -233,7 +213,6 @@ void libera_tabela(Tabela *TabelaHash)
             free(temp);
         }
     }
-    free(TabelaHash);
 }
 
 #endif
